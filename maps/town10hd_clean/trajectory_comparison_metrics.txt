@@ -1,0 +1,11 @@
+LIO-SAM Trajectory Accuracy — Town10HD
+=============================================
+GT poses          : 3300
+LIO-SAM keyframes : 378
+GT path length    : 597.4 m
+
+ATE RMSE          : 2.5386 m
+MAE               : 2.1497 m
+Median error      : 2.0735 m
+Max error         : 5.2430 m
+Relative error    : 0.42%

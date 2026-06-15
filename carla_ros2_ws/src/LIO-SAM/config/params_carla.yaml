@@ -1,0 +1,99 @@
+/**:
+  ros__parameters:
+
+    # ── Topics ────────────────────────────────────────────────────────────────
+    # lidar_preprocessor converts /carla/hero/lidar → /carla/hero/lidar_iosam
+    # adding ring + time fields required by LIO-SAM.
+    pointCloudTopic: "/carla/hero/lidar_iosam"
+    imuTopic: "/carla/hero/imu"
+    odomTopic: "odometry/imu"
+    gpsTopic: "odometry/gpsz"
+
+    # ── Frames ────────────────────────────────────────────────────────────────
+    lidarFrame: "hero/lidar"
+    baselinkFrame: "hero"
+    odometryFrame: "odom"
+    mapFrame: "map"
+
+    # ── GPS (disabled — we use IMU + LiDAR only) ──────────────────────────────
+    useImuHeadingInitialization: false
+    useGpsElevation: false
+    gpsCovThreshold: 2.0
+    poseCovThreshold: 25.0
+
+    # ── Export ────────────────────────────────────────────────────────────────
+    savePCD: false
+    savePCDDirectory: "/Downloads/LOAM/"
+
+    # ── Sensor Settings ───────────────────────────────────────────────────────
+    # CARLA ray_cast LiDAR: 32ch, 320kpts/s @ 20Hz → 16000pts/scan → 500pts/ring
+    # Velodyne format because our preprocessor outputs ring(uint16) + time(float32)
+    sensor: velodyne
+    N_SCAN: 32                 # channels in car_definition_lidar_only.json
+    Horizon_SCAN: 512          # nearest power-of-2 >= 500 pts/ring
+    downsampleRate: 1
+    lidarMinRange: 1.0
+    lidarMaxRange: 50.0        # matches CARLA sensor range parameter
+
+    # ── IMU Settings ──────────────────────────────────────────────────────────
+    # CARLA IMU has 0 noise configured, but LIO-SAM needs nonzero values.
+    # Using small realistic values to avoid NaN in Gaussian factors.
+    imuAccNoise: 0.01
+    imuGyrNoise: 0.001
+    imuAccBiasN: 0.0001
+    imuGyrBiasN: 0.0001
+
+    imuGravity: 9.80511
+    imuRPYWeight: 0.01
+
+    # ── Extrinsic: LiDAR → IMU ────────────────────────────────────────────────
+    # LiDAR spawn: (x=0.0, y=0.0, z=2.4) on car
+    # IMU spawn:   (x=2.0, y=0.0, z=2.0) on car
+    # Translation from LiDAR frame to IMU frame: (2.0, 0.0, -0.4)
+    # Both sensors aligned with car (X-forward, Y-left, Z-up) → identity rotation
+    extrinsicTrans: [2.0, 0.0, -0.4]
+    extrinsicRot:   [1.0, 0.0, 0.0,
+                     0.0, 1.0, 0.0,
+                     0.0, 0.0, 1.0]
+    extrinsicRPY:   [1.0, 0.0, 0.0,
+                     0.0, 1.0, 0.0,
+                     0.0, 0.0, 1.0]
+
+    # ── LOAM Feature Thresholds ───────────────────────────────────────────────
+    edgeThreshold: 1.0
+    surfThreshold: 0.1
+    edgeFeatureMinValidNum: 10
+    surfFeatureMinValidNum: 100
+
+    # ── Voxel Filter ─────────────────────────────────────────────────────────
+    odometrySurfLeafSize: 0.4
+    mappingCornerLeafSize: 0.2
+    mappingSurfLeafSize: 0.4
+
+    # ── Motion Constraint (3D vehicle — no floor constraint) ──────────────────
+    z_tollerance: 1000.0
+    rotation_tollerance: 1000.0
+
+    # ── CPU ───────────────────────────────────────────────────────────────────
+    numberOfCores: 4
+    mappingProcessInterval: 0.15
+
+    # ── Surrounding Map ───────────────────────────────────────────────────────
+    surroundingkeyframeAddingDistThreshold: 1.0
+    surroundingkeyframeAddingAngleThreshold: 0.2
+    surroundingKeyframeDensity: 2.0
+    surroundingKeyframeSearchRadius: 50.0
+
+    # ── Loop Closure ──────────────────────────────────────────────────────────
+    loopClosureEnableFlag: true
+    loopClosureFrequency: 1.0
+    surroundingKeyframeSize: 50
+    historyKeyframeSearchRadius: 15.0
+    historyKeyframeSearchTimeDiff: 30.0
+    historyKeyframeSearchNum: 25
+    historyKeyframeFitnessScore: 0.3
+
+    # ── Visualization ─────────────────────────────────────────────────────────
+    globalMapVisualizationSearchRadius: 1000.0
+    globalMapVisualizationPoseDensity: 10.0
+    globalMapVisualizationLeafSize: 1.0

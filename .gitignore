@@ -1,0 +1,23 @@
+# Ignore simulator archive
+CARLA_0.9.15.tar.gz
+CARLA_0.9.15/
+
+# Ignore ROS2 workspaces compiled directories
+**/build/
+**/install/
+**/log/
+
+# Ignore bag recording files
+bags/
+*.db3
+*.metadata
+*.db3-shm
+*.db3-wal
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Local system configuration/hidden files
+.DS_Store
+.vscode/
